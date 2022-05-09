@@ -46,7 +46,7 @@ jobs:
           RUST_BACKTRACE: 1
 
       - name: cargo test (debug; all features)
-        run: cargo test --all-features
+        run: cargo test --all-features -- --nocapture
         env:
           RUST_BACKTRACE: 1
 

@@ -17,12 +17,21 @@ pub fn load_native_certs() -> Result<Vec<Certificate>, Error> {
     let mut certs = Vec::new();
 
     let current_user_store = schannel::cert_store::CertStore::open_current_user("ROOT")?;
+    for cert in current_user_store.certs() {
+        if usable_for_rustls(cert.valid_uses().unwrap()) {
+            certs.push(Certificate(cert.to_der().to_vec()));
+        }
+    }
+
+    println!("certs len with time invalid:{}", certs.len());
+    certs.clear();
 
     for cert in current_user_store.certs() {
         if usable_for_rustls(cert.valid_uses().unwrap()) && cert.is_time_valid().unwrap() {
             certs.push(Certificate(cert.to_der().to_vec()));
         }
     }
+    println!("certs len without time invalid:{}", certs.len());
 
     Ok(certs)
 }
